@@ -103,6 +103,194 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
   .chip{min-width:0;padding-left:4px;padding-right:4px}
 }
 
+
+/* 自動再生設定：上段は値/ON-OFF、下段はキャプション */
+.playopts{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) auto;
+  align-items:start;
+  gap:8px;
+}
+.playopts .pcol{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:4px;
+}
+.playopts .pval{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  text-align:center;
+}
+.playopts .pcap{
+  display:block;
+  min-height:16px;
+  text-align:center;
+  font-size:11px;
+  line-height:1.2;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.playopts #bpmlab.beat{color:var(--teal)}
+.playopts #bpmms{
+  align-self:center;
+  white-space:nowrap;
+  font-size:11px;
+}
+@media (max-width:600px){
+  .playopts{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .playopts #bpmms{
+    grid-column:1/-1;
+    justify-self:end;
+    margin-top:-2px;
+  }
+}
+
+
+/* (66) 再生設定4項目を完全な均等幅にする */
+.playopts{
+  width:100%;
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  column-gap:8px !important;
+  row-gap:4px !important;
+  align-items:start !important;
+}
+.playopts .pcol{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-rows:32px 16px;
+  gap:4px;
+}
+.playopts .pval,
+.playopts button.pval,
+.playopts input.pval,
+.playopts select.pval{
+  display:block;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:32px !important;
+  min-height:32px !important;
+  margin:0 !important;
+  padding:0 4px !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+}
+.playopts input.pval{
+  appearance:textfield;
+  -moz-appearance:textfield;
+}
+.playopts input.pval::-webkit-inner-spin-button,
+.playopts input.pval::-webkit-outer-spin-button{
+  margin:0;
+}
+.playopts .pcap{
+  width:100%;
+  margin:0;
+  padding:0;
+  text-align:center;
+  line-height:16px;
+}
+.playopts #bpmms{
+  grid-column:1/-1;
+  justify-self:end;
+  margin:0;
+}
+
+
+/* (67) 再生設定：必要幅だけ使って左寄せ、狭ければ自然に折り返す */
+.playopts{
+  width:auto !important;
+  display:flex !important;
+  flex-wrap:wrap !important;
+  justify-content:flex-start !important;
+  align-items:flex-start !important;
+  gap:8px !important;
+}
+.playopts .pcol{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:58px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:4px !important;
+}
+.playopts .pval,
+.playopts button.pval,
+.playopts input.pval,
+.playopts select.pval{
+  width:100% !important;
+  min-width:58px !important;
+  max-width:78px !important;
+  height:32px !important;
+  min-height:32px !important;
+  margin:0 !important;
+  padding:0 6px !important;
+  box-sizing:border-box !important;
+  text-align:center !important;
+}
+.playopts .pcap{
+  width:100% !important;
+  min-width:58px !important;
+  text-align:center !important;
+  line-height:16px !important;
+  white-space:nowrap !important;
+}
+.playopts #bpmms{
+  flex:0 0 auto !important;
+  align-self:center !important;
+  margin:0 !important;
+  white-space:nowrap !important;
+}
+
+
+/* (68) 中段のsqボタンと横幅を統一。再生設定だけ縦を低くする */
+.playopts .pcol{
+  flex:0 0 44px !important;
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+}
+.playopts .pval,
+.playopts button.pval,
+.playopts input.pval,
+.playopts select.pval{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  height:32px !important;
+  min-height:32px !important;
+  padding:0 2px !important;
+}
+.playopts .pcap{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  font-size:10px !important;
+}
+
+
+/* (69) 再生設定キャプションを中段 .cap と統一 */
+.playopts .pcol{
+  gap:3px !important;
+}
+.playopts .pcap{
+  width:44px !important;
+  min-width:44px !important;
+  max-width:44px !important;
+  font-size:10px !important;
+  color:var(--fg3) !important;
+  white-space:nowrap !important;
+  line-height:1.25 !important;
+  text-align:center !important;
+  min-height:0 !important;
+}
+
 </style>
 </head>
 <body>
@@ -187,13 +375,12 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 進行の最後まで来ると、リングが最寄りの整列位置へ寄って止まる。</p>
 
 <div id="bar">
-  <div class="brow">
-    <button id="play">自動再生</button>
-    <span class="lab" id="bpmlab">BPM</span>
-    <input type="number" id="bpm" value="90" min="30" max="240" step="1">
-    <select id="beats"><option value="1">1拍</option><option value="2" selected>2拍</option>
-      <option value="3">3拍</option><option value="4">4拍</option></select>
-    <button id="loop">繰り返し</button>
+  <div class="brow playopts">
+    <div class="pcol"><button id="play" class="pval">OFF</button><span class="pcap">自動再生</span></div>
+    <div class="pcol"><input class="pval" type="number" id="bpm" value="90" min="30" max="240" step="1"><span class="pcap" id="bpmlab">BPM</span></div>
+    <div class="pcol"><select class="pval" id="beats"><option value="1">1</option><option value="2" selected>2</option>
+      <option value="3">3</option><option value="4">4</option></select><span class="pcap">拍数</span></div>
+    <div class="pcol"><button id="loop" class="pval">OFF</button><span class="pcap">繰返し</span></div>
     <span class="lab" id="bpmms"></span>
   </div>
   <div class="brow">
@@ -737,7 +924,7 @@ function stopBeat(){if(bTimer){clearTimeout(bTimer);bTimer=null;}
 document.getElementById('bpmlab').classList.remove('beat');}
 function stopPlay(){if(pTimer){clearTimeout(pTimer);pTimer=null;}
 stopBeat();
-var b=document.getElementById('play');b.textContent='自動再生';b.className='';}
+var b=document.getElementById('play');b.textContent='OFF';b.className='pval';}
 var loopOn=false, arCount=0, agCount=0, pendingView=false, pendingGenerate=false;
 /* 自動再生が鳴らしたものだけを控える。手で押した 戻る・次へ・連打・頭から や
    盤面の顔は入らない。繰り返しの周ごとに区切りを入れる。停止しても消さない */
@@ -802,13 +989,14 @@ function autoStep(){
 function startPlay(){
   if(!prog.length)return;
   if(idx<0||idx>=prog.length-1)idx=-1;
-  var b=document.getElementById('play');b.textContent='停止';b.className='act';
+  var b=document.getElementById('play');b.textContent='ON';b.className='pval act';
   arCount=0;agCount=0;pendingView=false;pendingGenerate=false;hist=[];histSync();
   pNext=performance.now();bNext=pNext;beatTick();autoStep();
 }
 document.getElementById('play').onclick=function(){pTimer?stopPlay():startPlay();};
 document.getElementById('loop').onclick=function(){loopOn=!loopOn;
-this.className=loopOn?'act':'';};
+this.textContent=loopOn?'ON':'OFF';
+this.className='pval'+(loopOn?' act':'');};
 document.getElementById('areroll').onclick=function(e){
   arIdx=(arIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;arCount=0;arSync();};
 document.getElementById('agen').onclick=function(e){
