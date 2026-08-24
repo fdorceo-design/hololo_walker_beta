@@ -43,6 +43,9 @@ h1{font-size:17px;font-weight:500;margin:0 0 2px}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--fg3);margin:6px 0 16px}
 .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:1px}
 .row{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+#selrow{gap:7px}
+#selrow select{padding:10px 6px;min-width:0;flex:1 1 auto}
+#selrow .lab{font-size:12px}
 .lab{font-size:13px;color:var(--fg2);white-space:nowrap}
 button,select{font:inherit;font-size:15px;color:var(--fg);background:transparent;
   border:1px solid var(--line2);border-radius:var(--radius);padding:10px 16px;min-height:44px;cursor:pointer}
@@ -52,6 +55,8 @@ button.act{background:rgba(93,202,165,.14);border-color:var(--teal);color:var(--
 button:focus-visible,select:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
 input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);background:transparent}
 .val{font-size:13px;min-width:26px;text-align:right;color:var(--fg2)}
+.row.off{opacity:.38}
+.row.off input{pointer-events:none}
 #out{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 10px}
 .chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.25;
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;padding:9px 12px;
@@ -66,10 +71,18 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
   margin:6px 0 0;min-height:1.5em}
 #perf.bad{color:var(--red)}
 .hint{font-size:11px;color:var(--fg3);margin:14px 0 0}
-#bar{position:sticky;bottom:0;left:0;right:0;display:flex;gap:8px;margin:16px -12px -96px;
-  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+#bar{position:sticky;bottom:0;left:0;right:0;display:flex;flex-direction:column;gap:8px;
+  margin:16px -12px -96px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
   background:rgba(15,17,19,.94);border-top:1px solid var(--line);backdrop-filter:blur(8px)}
-#bar button{flex:1;padding:12px 8px}
+.brow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#beats{flex:0 0 auto;width:76px;padding:10px 6px}
+#areroll{min-width:92px}
+.brow button{flex:1;padding:12px 6px;font-size:14px}
+#play{flex:0 0 auto;min-width:104px}
+#loop{flex:0 0 auto;padding:10px 12px}
+#bpm{width:78px;flex:0 0 auto;font-size:15px;color:var(--fg);background:var(--panel);
+  border:1px solid var(--line2);border-radius:10px;padding:10px 8px;min-height:44px}
+#bpmms{font-size:11px;color:var(--fg3);font-family:ui-monospace,Menlo,monospace}
 #step{flex:1.6 !important;background:rgba(93,202,165,.14);border-color:var(--teal);color:var(--teal)}
 </style>
 </head>
@@ -91,11 +104,16 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 <span><i style="background:var(--pink)"></i>借用</span>
 </div>
 
-<div class="row">
-  <span class="lab">キー</span><select id="key" style="width:88px"></select>
+<div class="row" id="selrow">
+  <span class="lab">キー</span><select id="key"></select>
   <span class="lab">個数</span>
-  <select id="len" style="width:82px"><option>4</option><option selected>8</option><option>12</option><option>16</option><option>20</option><option>24</option><option>28</option><option>32</option><option>36</option></select>
+  <select id="len"><option>4</option><option selected>8</option><option>12</option><option>16</option><option>20</option><option>24</option><option>28</option><option>32</option><option>36</option></select>
+  <span class="lab">素直周期</span>
+  <select id="blkw"><option value="0" selected>なし</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
+  <span class="lab">和音周期</span>
+  <select id="blk"><option value="0" selected>なし</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
 </div>
+
 <div class="row">
   <span class="lab">素直</span><input type="range" id="w" min="0" max="100" step="1" value="20">
   <span class="lab">変</span><span class="val" id="wv">20</span>
@@ -104,30 +122,27 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
   <span class="lab">三和音</span><input type="range" id="ten" min="0" max="100" step="1" value="45">
   <span class="lab">13th</span><span class="val" id="tv">45</span>
 </div>
-<div class="row">
-  <span class="lab">区切り</span>
-  <select id="blk" style="width:86px">
-    <option value="0" selected>なし</option><option>2</option><option>3</option>
-    <option>4</option><option>6</option><option>8</option></select>
-  <span class="lab">変化幅</span><input type="range" id="amp2" min="0" max="100" step="5" value="60">
+<div class="row" id="ampwRow">
+  <span class="lab">素直周期</span><input type="range" id="ampw" min="0" max="100" step="5" value="60">
+  <span class="val" id="ampwv">60</span>
+</div>
+<div class="row"><span class="lab" id="winfo" style="min-width:auto"></span></div>
+<div class="row" id="ampRow">
+  <span class="lab">和音周期</span><input type="range" id="amp2" min="0" max="100" step="5" value="60">
   <span class="val" id="a2v">60</span>
 </div>
-<div class="row">
-  <span class="lab">形</span>
-  <select id="shape" style="width:98px">
-    <option value="up">薄→厚</option><option value="down">厚→薄</option>
-    <option value="arch" selected>山</option><option value="rand">段ごと任意</option></select>
-  <button id="flat">均す</button>
-  <span class="lab" id="blkinfo"></span>
-</div>
+<div class="row"><span class="lab" id="blkinfo" style="min-width:auto"></span></div>
+
 <div class="row">
   <button id="startmode" class="act">開始 主和音</button>
   <button id="gen">生成</button>
   <button id="reroll">積み直し</button>
+  <button id="areroll" title="自動再生中に、和音を鳴らした個数ごとに積み直しを自動で押す。Shift+クリックで逆送り">自動なし</button>
   <button id="degb" class="act">度数を表示</button>
   <button id="cnb" class="act">コード名</button>
   <button id="engb" class="act">サンプル再生</button>
   <button id="copy">コピー</button>
+  <button id="copyrun">演奏コピー</button>
 </div>
 
 <div id="perf">サンプル読み込み中</div>
@@ -138,9 +153,21 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 進行の最後まで来ると、リングが最寄りの整列位置へ寄って止まる。</p>
 
 <div id="bar">
-  <button id="back">戻る</button>
-  <button id="step">次へ</button>
-  <button id="top">頭から</button>
+  <div class="brow">
+    <button id="play">自動再生</button>
+    <span class="lab">BPM</span>
+    <input type="number" id="bpm" value="90" min="30" max="240" step="1">
+    <select id="beats"><option value="1">1拍</option><option value="2" selected>2拍</option>
+      <option value="3">3拍</option><option value="4">4拍</option></select>
+    <button id="loop">繰り返し</button>
+    <span class="lab" id="bpmms"></span>
+  </div>
+  <div class="brow">
+    <button id="back">戻る</button>
+    <button id="step">次へ</button>
+    <button id="again">連打</button>
+    <button id="top">頭から</button>
+  </div>
 </div>
 </div>
 
@@ -396,41 +423,71 @@ function pick(code,quiet,last){
 /* ---- 以下は元のアプリのまま ---- */
 function rollTier(){var p=+document.getElementById('ten').value/100,t=0;for(var i=1;i<5;i++){if(Math.random()<p)t=i;else break;}return t;}
 /* ── 進行の中で厚さを動かす ──
-   区切り N コマごとに 1段。段ごとにテンションのつまみを 変化幅 のぶん振って、
+   区切り N 個ごとに 1段。段ごとにテンションのつまみを 変化幅 のぶん振って、
    その値で積みを決める。「均す」を入れると段の中でばらけなくなり、形がはっきり出る */
-var flatTier=false, blockRand=[];
-function blockP(i,len){
-  var base=+document.getElementById('ten').value/100;
-  var N=+document.getElementById('blk').value;
-  var amp=+document.getElementById('amp2').value/100;
+var blockRand=[];   /* 形は「山」、段の中は均す、で固定 */
+function shapeP(base,N,amp,i,len){
   if(!N||!amp)return base;
   var B=Math.max(1,Math.ceil(len/N)), b=Math.floor(i/N);
-  var u=B>1?b/(B-1):0.5, sh=document.getElementById('shape').value, k;
-  if(sh==='up')k=u-0.5;
-  else if(sh==='down')k=0.5-u;
-  else if(sh==='arch')k=Math.sin(Math.PI*u)-0.5;
-  else {if(blockRand[b]===undefined)blockRand[b]=Math.random();k=blockRand[b]-0.5;}
-  return Math.max(0,Math.min(1,base+amp*k));
+  if(B<2)return base;                       /* 1段では山にならない */
+  var u=B>1?b/(B-1):0.5;
+  return Math.max(0,Math.min(1,base+amp*(Math.sin(Math.PI*u)-0.5)));  /* 山 */
+}
+function num(id){return +document.getElementById(id).value;}
+function blockP(i,len){return shapeP(num('ten')/100,num('blk'),num('amp2')/100,i,len);}
+function walkP(i,len){return shapeP(num('w')/100,num('blkw'),num('ampw')/100,i,len);}
+/* 周期なし … つまみの値どおりにコイン投げ。数か所だけ厚くなる元の挙動
+   周期あり … 段ごとの山にしたがって厚さを決める。段の中は均す。
+              ただし段ごとに ±0.5段 の揺らぎを持たせてあるので、積み直しで表情が変わる */
+function jit(b){if(blockRand[b]===undefined)blockRand[b]=Math.random()-0.5;return blockRand[b];}
+function tierAtBlock(b,N,len){
+  return Math.max(0,Math.min(4,Math.round(blockP(b*N,len)*4+jit(b))));
 }
 function rollTierAt(i,len){
-  var p=blockP(i,len);
-  if(flatTier)return Math.round(p*4);
-  var t=0;for(var k=1;k<5;k++){if(Math.random()<p)t=k;else break;}return t;
+  var N=num('blk');
+  if(!N)return rollTier();
+  return tierAtBlock(Math.floor(i/N),N,len);
+}
+var TNAME=['三和音','7th','9th','11th','13th'];
+function oneInfo(elId,rowId,ampId,N,len,label,zero){
+  var e=document.getElementById(elId);
+  document.getElementById(ampId).disabled=!N;
+  document.getElementById(rowId).className='row'+(N?'':' off');
+  if(!N){e.textContent=zero;return;}
+  var B=Math.ceil(len/N),a=[];
+  for(var b=0;b<B;b++)a.push(label(b,N,len));
+  e.textContent=len+'個を '+B+'段  '+a.join(' → ');
+}
+/* 個数を超える周期は選べない。選択中のものが範囲外になったら「なし」に戻す */
+function syncPeriods(){
+  var len=num('len');
+  ['blkw','blk'].forEach(function(id){
+    var sel=document.getElementById(id);
+    Array.prototype.forEach.call(sel.options,function(o){
+      var v=+o.value, bad=(v>0&&v>len);
+      o.disabled=bad;
+      if(bad&&sel.value===o.value)sel.value='0';
+    });
+  });
 }
 function blkInfo(){
-  var N=+document.getElementById('blk').value, len=+document.getElementById('len').value;
-  var e=document.getElementById('blkinfo');
-  if(!N){e.textContent='進行ぜんぶ同じ設定';return;}
-  var B=Math.ceil(len/N), a=[];
-  for(var b=0;b<B;b++)a.push(Math.round(blockP(b*N,len)*100)+'%');
-  e.textContent=len+'コマを '+B+'段  '+a.join(' → ');
+  syncPeriods();
+  var len=num('len');
+  oneInfo('winfo','ampwRow','ampw',num('blkw'),len,
+    function(b,N,l){return Math.round(walkP(b*N,l)*100)+'%';},'（素直スライダーのまま）');
+  oneInfo('blkinfo','ampRow','amp2',num('blk'),len,
+    function(b,N,l){return TNAME[tierAtBlock(b,N,l)];},'（三和音スライダーのまま）');
 }
-function reroll(){faceTier={};blockRand=[];
+/* 積みを引き直すだけ。表示には触らない */
+function rerollTiers(){faceTier={};blockRand=[];
 prog=prog.map(function(c,i){return{n:c.n,tier:rollTierAt(i,prog.length)};});
-buildProgTier();render();hl();relabel();blkInfo();}
-function walk(){var kk=1-2*(+document.getElementById('w').value/100),n=+document.getElementById('len').value;
+buildProgTier();}
+/* 手で押したときは、その場で表示も更新する */
+function reroll(){rerollTiers();render();hl();relabel();blkInfo();}
+function walk(){var n=num('len');
 var cu=fixC?'C':keys[Math.floor(Math.random()*keys.length)],r=[cu];
 for(var i=1;i<n;i++){var o=lines[cu]||[];if(!o.length){cu='C';r.push('C');continue;}
+var kk=1-2*walkP(i,n);                     /* 段ごとに素直⇄変が動く */
 var ws=o.map(function(e){return Math.pow(e.w,kk);}),s=ws.reduce(function(a,b){return a+b;},0),x=Math.random()*s,j=0;
 while(x>ws[j]&&j<o.length-1){x-=ws[j];j++;}cu=o[j].b;r.push(cu);}
 blockRand=[];prog=r.map(function(c,i){return{n:c,tier:rollTierAt(i,r.length)};});idx=-1;
@@ -511,7 +568,7 @@ relabel();
 popCn(c.n);}
 function go(d){if(!prog.length)return;idx+=d;if(idx>=prog.length)idx=0;if(idx<0)idx=prog.length-1;
 hl();pick(prog[idx].n,false,idx===prog.length-1);playChord(prog[idx]);}
-document.getElementById('w').oninput=function(){document.getElementById('wv').textContent=this.value;};
+document.getElementById('w').oninput=function(){document.getElementById('wv').textContent=this.value;blkInfo();};
 document.getElementById('ten').oninput=function(){document.getElementById('tv').textContent=this.value;blkInfo();};
 document.getElementById('ten').onchange=reroll;
 document.getElementById('key').onchange=function(){key=+this.value;relabel();render();hl();
@@ -525,7 +582,85 @@ this.className=showCode?'act':'';relabel();};
 document.getElementById('gen').onclick=walk;
 document.getElementById('reroll').onclick=reroll;
 document.getElementById('step').onclick=function(){go(1);};
+/* ── 自動再生。1拍にコード1個 ── */
+var pTimer=null,pNext=0;
+function bpmMs(){var b=Math.min(240,Math.max(30,+document.getElementById('bpm').value||90));
+return 60000/b*(+document.getElementById('beats').value||1);}
+function showBpm(){document.getElementById('bpmms').textContent=Math.round(bpmMs())+'ms';}
+function stopPlay(){if(pTimer){clearTimeout(pTimer);pTimer=null;}
+var b=document.getElementById('play');b.textContent='自動再生';b.className='';}
+var loopOn=false, arCount=0, pendingView=false;
+/* 自動再生が鳴らしたものだけを控える。手で押した 戻る・次へ・連打・頭から や
+   盤面の顔は入らない。繰り返しの周ごとに区切りを入れる。停止しても消さない */
+var hist=[];
+function histCount(){var n=0;hist.forEach(function(h){if(!h.br)n++;});return n;}
+function histText(){
+  var lines=[],cur=[];
+  hist.forEach(function(h){
+    if(h.br){if(cur.length)lines.push(cur.join(' → '));cur=[];}
+    else cur.push(label(h));
+  });
+  if(cur.length)lines.push(cur.join(' → '));
+  return 'key: '+(KF[key]?FL:SH)[key]+'\n'+lines.join('\n');
+}
+function histSync(){var b=document.getElementById('copyrun'),n=histCount();
+b.textContent=n?('演奏コピー '+n):'演奏コピー';b.disabled=!n;b.style.opacity=n?1:0.4;}
+/* 自動積み直し。数える単位は和音の個数で、上の「個数」と同じ。拍数は関係しない。
+   押すごとに順送り、Shift+クリックで逆送り */
+var AR=['0','loop'], ARL=['自動なし','1周ごと'];
+for(var q=2;q<=16;q++){AR.push(''+q);ARL.push(q+'個');}
+var arIdx=0;
+function arVal(){return AR[arIdx];}
+function arSync(){var b=document.getElementById('areroll');
+b.textContent=ARL[arIdx];b.className=arIdx?'act':'';}
+function autoStep(){
+  if(!prog.length){stopPlay();return;}
+  if(idx>=prog.length-1){                 /* 1周した */
+    if(!loopOn){stopPlay();return;}
+    idx=-1;hist.push({br:1});             /* 繰り返しなら頭へ。周の区切りを入れる */
+    if(arVal()==='loop'){rerollTiers();pendingView=true;}
+  }
+  idx++;
+  if(pendingView){pendingView=false;render();blkInfo();}  /* 音と表示を揃える */
+  hl();
+  var last=(idx===prog.length-1);
+  pick(prog[idx].n,false,last&&!loopOn);  /* 繰り返し中は終止で止めない */
+  playChord(prog[idx]);
+  hist.push({n:prog[idx].n,tier:prog[idx].tier});histSync();
+  var ar=arVal();
+  if(ar!=='loop'&&+ar>0&&++arCount>=+ar){arCount=0;rerollTiers();pendingView=true;}
+  if(last&&!loopOn){stopPlay();return;}
+  pNext+=bpmMs();
+  pTimer=setTimeout(autoStep,Math.max(20,pNext-performance.now()));
+}
+function startPlay(){
+  if(!prog.length)return;
+  if(idx<0||idx>=prog.length-1)idx=-1;
+  var b=document.getElementById('play');b.textContent='停止';b.className='act';
+  arCount=0;pendingView=false;hist=[];histSync();pNext=performance.now();autoStep();
+}
+document.getElementById('play').onclick=function(){pTimer?stopPlay():startPlay();};
+document.getElementById('loop').onclick=function(){loopOn=!loopOn;
+this.className=loopOn?'act':'';};
+document.getElementById('areroll').onclick=function(e){
+  arIdx=(arIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;arCount=0;arSync();};
+document.getElementById('copyrun').onclick=function(){
+  if(!histCount())return;
+  var t=histText(),b=this,old=b.textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){b.textContent='コピーした';
+      setTimeout(function(){b.textContent=old;},1200);},
+      function(){document.getElementById('cur').textContent=t;});
+  } else document.getElementById('cur').textContent=t;};
+document.getElementById('bpm').oninput=showBpm;
+document.getElementById('beats').onchange=showBpm;
 document.getElementById('back').onclick=function(){go(-1);};
+/* いま鳴っているコマを、進めずにもう一度鳴らす */
+document.getElementById('again').onclick=function(){
+  if(!prog.length)return;
+  if(idx<0){idx=0;hl();}
+  pick(prog[idx].n,false,idx===prog.length-1);
+  playChord(prog[idx]);};
 document.getElementById('top').onclick=function(){idx=0;hl();pick(prog[idx].n);playChord(prog[idx]);};
 document.getElementById('copy').onclick=function(){var s='key: '+(KF[key]?FL:SH)[key]+'\n'+prog.map(label).join(' → '),b=this;
 if(navigator.clipboard&&navigator.clipboard.writeText){
@@ -536,17 +671,20 @@ document.addEventListener('keydown',function(e){var tag=(e.target.tagName||'').t
 if(tag==='input'||tag==='select'||tag==='textarea')return;
 if(e.key==='ArrowRight'){e.preventDefault();go(1);}
 else if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+else if(e.key==='r'||e.key==='R'){e.preventDefault();document.getElementById('again').click();}
 else if(e.key==='g'||e.key==='G'){e.preventDefault();walk();}});
 document.getElementById('engb').onclick=function(){useSamp=!useSamp;
 this.className=useSamp?'act':'';perfShow(0);};
-['blk','shape'].forEach(function(id){document.getElementById(id).onchange=function(){blkInfo();reroll();};});
+document.getElementById('blk').onchange=function(){blockRand=[];blkInfo();reroll();};
+document.getElementById('blkw').onchange=function(){blkInfo();walk();};
+document.getElementById('ampw').oninput=function(){
+  document.getElementById('ampwv').textContent=this.value;blkInfo();};
+document.getElementById('ampw').onchange=walk;
 document.getElementById('amp2').oninput=function(){
   document.getElementById('a2v').textContent=this.value;blkInfo();};
-document.getElementById('amp2').onchange=reroll;
-document.getElementById('len').onchange=blkInfo;
-document.getElementById('flat').onclick=function(){flatTier=!flatTier;
-  this.className=flatTier?'act':'';reroll();};
-bgSet();relabel();walk();blkInfo();initSamp();
+document.getElementById('amp2').onchange=function(){blkInfo();reroll();};
+document.getElementById('len').onchange=function(){blkInfo();};
+bgSet();relabel();walk();blkInfo();showBpm();arSync();histSync();initSamp();
 })();
 </script>
 </body>
