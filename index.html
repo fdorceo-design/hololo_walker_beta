@@ -456,8 +456,7 @@ function pick(code,quiet,last){
     el.style.width=sz+'px';el.style.height=sz+'px';
     el.style.opacity=dim?DK:1;el.style.zIndex=Math.round(sz);
     if(cnAnim[c]){cnAnim[c].cancel();cnAnim[c]=null;}
-    cnStyle(el,sz);
-    spin(c,sz);
+    spin(c,sz);   /* コード名は relabel() で文字が確定してから一度だけ組み直す */
   });
   if(last)cadence(code);
   relabel();
