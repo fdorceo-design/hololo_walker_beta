@@ -47,8 +47,9 @@ h1{font-size:17px;font-weight:500;margin:0 0 2px}
 .row{display:flex;align-items:center;gap:10px;margin:0 0 12px;flex-wrap:wrap}
 #ctl{max-width:480px}
 #selrow{gap:6px}
-#selrow select{padding:10px 4px;flex:0 0 auto;width:68px;text-align:center}
+#selrow select{padding:10px 2px;flex:0 0 auto;width:52px;text-align:center;font-size:14px}
 #selrow .lab{font-size:12px}
+.lab2{line-height:1.15;text-align:center}
 .lab{font-size:13px;color:var(--fg2);white-space:nowrap}
 button,select{font:inherit;font-size:15px;color:var(--fg);background:transparent;
   border:1px solid var(--line2);border-radius:var(--radius);padding:10px 16px;min-height:44px;cursor:pointer}
@@ -118,9 +119,9 @@ input.sq{-moz-appearance:textfield}
 
 <div class="leg">
 <span><i style="background:var(--teal)"></i>ダイアトニック</span>
-<span><i style="background:var(--amber)"></i>セカンダリードミナント</span>
+<span><i style="background:var(--amber)"></i>セカンダリーD</span>
 <span><i style="background:var(--coral)"></i>裏コード</span>
-<span><i style="background:var(--purple)"></i>ディミニッシュ</span>
+<span><i style="background:var(--purple)"></i>Dim</span>
 <span><i style="background:var(--pink)"></i>借用</span>
 </div>
 
@@ -131,9 +132,9 @@ input.sq{-moz-appearance:textfield}
   <span class="lab">キー</span><select id="key"></select>
   <span class="lab">個数</span>
   <select id="len"><option>4</option><option selected>8</option><option>12</option><option>16</option><option>20</option><option>24</option><option>28</option><option>32</option><option>36</option></select>
-  <span class="lab">素直周期</span>
+  <span class="lab lab2">素直<br>周期</span>
   <select id="blkw"><option value="0" selected>なし</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
-  <span class="lab">和音周期</span>
+  <span class="lab lab2">和音<br>周期</span>
   <select id="blk"><option value="0" selected>なし</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
 </div>
 
@@ -145,7 +146,6 @@ input.sq{-moz-appearance:textfield}
   <div class="bcol"><button id="areroll" class="sq" title="自動再生中に、和音を鳴らした個数ごとに積み直しを自動で押す。Shift+クリックで逆送り">なし</button><span class="cap">自動<br>積直し</span></div>
   <div class="bcol"><button id="degb" class="sq act">ON</button><span class="cap">度数表示</span></div>
   <div class="bcol"><button id="cnb" class="sq act">ON</button><span class="cap">コード名</span></div>
-  <div class="bcol"><button id="engb" class="sq act">ON</button><span class="cap">声再生</span></div>
 </div>
 
 <div id="btns2">
@@ -153,6 +153,7 @@ input.sq{-moz-appearance:textfield}
   <div class="bcol"><button id="c3b" class="sq">OFF</button><span class="cap">折返し3</span></div>
   <div class="bcol"><button id="copy" class="sq">C</button><span class="cap">進行コピー</span></div>
   <div class="bcol"><button id="copyrun" class="sq">0</button><span class="cap">演奏コピー</span></div>
+  <div class="bcol"><button id="engb" class="sq act">ON</button><span class="cap">声再生</span></div>
 </div>
 <div class="row">
   <span class="lab">素直</span><input type="range" id="w" min="0" max="100" step="1" value="20">
@@ -187,6 +188,8 @@ input.sq{-moz-appearance:textfield}
     <div class="bcol"><button id="beats" class="sq">2</button><span class="cap">拍数</span></div>
     <div class="bcol"><button id="loop" class="sq">OFF</button><span class="cap">繰返し</span></div>
     <div class="rd"><span id="pos"></span><span id="bpmms"></span></div>
+  </div>
+  <div class="brow">
     <button id="back">戻る</button>
     <button id="step">次へ</button>
     <button id="again">連打</button>
