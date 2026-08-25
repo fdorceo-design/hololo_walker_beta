@@ -39,8 +39,7 @@ h1{font-size:17px;font-weight:500;margin:0 0 2px}
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.3;
   white-space:nowrap;pointer-events:none;padding:1px 5px;border-radius:6px;
   background:rgba(15,17,19,.82);border:1px solid var(--line);
-  transition:top .22s cubic-bezier(.2,.9,.25,1),box-shadow .22s ease,
-             margin-left .22s cubic-bezier(.2,.9,.25,1)}
+  transition:top .22s cubic-bezier(.2,.9,.25,1),box-shadow .22s ease}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--fg3);margin:6px 0 16px}
 .leg2{max-width:480px;margin:18px 0 8px}
 .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:1px}
@@ -381,11 +380,13 @@ function tf(y){return 'translate(-50%,'+y+'px)';}
 function cnFix(el,y){
   var c=el._cn;
   c.style.transform=tf(y);
-  c.style.marginLeft='0px';
-  var w=c.offsetWidth, x=el._x, dx=0;      /* offsetWidth は scale の影響を受けない */
+  /* offsetWidth は margin を含まないので、いま入っている margin を戻す必要はない。
+     scale の影響も受けないため、盤面の座標系そのままで比べられる */
+  var w=c.offsetWidth, x=el._x, dx=0;
   if(x-w/2<4)dx=4-(x-w/2);
   else if(x+w/2>676)dx=676-(x+w/2);
-  c.style.marginLeft=Math.round(dx)+'px';  /* 横のずらしは transform に混ぜない */
+  dx=Math.round(dx);
+  if(c._dx!==dx){c._dx=dx;c.style.marginLeft=dx+'px';}   /* 同じ値なら触らない */
 }
 function cnStyle(el,sz){
   var c=el._cn, col=TCOL[el._n.row];
@@ -411,7 +412,8 @@ function cnStyle(el,sz){
     c.style.border='1.5px solid '+col;
     cnFix(el,3);}
   else {c.style.fontSize='';c.style.padding='';c.style.borderRadius='';
-    c.style.transform=tf(3);c.style.marginLeft='0px';
+    c.style.transform=tf(3);
+    if(c._dx!==0){c._dx=0;c.style.marginLeft='0px';}
     c.style.boxShadow='';c.style.background='';c.style.border='';}
 }
 function reveal(code){
