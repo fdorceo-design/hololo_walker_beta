@@ -22,7 +22,8 @@ h1{font-size:17px;font-weight:500;margin:0 0 2px}
 .sub{font-size:12px;color:var(--fg3);margin:0 0 12px}
 #scroller{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
   margin:0 -12px;padding:0 12px;scrollbar-width:thin}
-#pad{width:680px;padding:44px 0 76px;position:relative}
+#fit{width:680px}
+#pad{width:680px;padding:44px 0 76px;position:relative;transform-origin:top left}
 #board{position:relative;width:680px;height:540px}
 #bgimg{position:absolute;pointer-events:none;transform-origin:0 0}
 #wires{position:absolute;inset:0;pointer-events:none;overflow:visible}
@@ -79,22 +80,30 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
   margin:16px -12px -96px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
   background:rgba(15,17,19,.94);border-top:1px solid var(--line);backdrop-filter:blur(8px)}
 .brow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#beats{flex:0 0 auto;width:76px;padding:10px 6px}
+.brow>button{flex:0 0 auto;width:44px;height:38px;min-height:38px;padding:0;font-size:13px;
+  display:flex;align-items:center;justify-content:center}
+.rd{display:flex;flex-direction:column;justify-content:center;gap:2px;
+  font-size:11px;color:var(--fg3);font-family:ui-monospace,Menlo,monospace;
+  line-height:1.25;height:38px;margin:0 4px;min-width:44px;text-align:center}
 #btns,#btns2{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;align-items:flex-start}
-#btns2{margin:10px 0 14px}
+#btns{margin:2px 0 16px}
+#btns2{margin:0 0 16px}
 .bcol{display:flex;flex-direction:column;align-items:center;gap:3px;flex:0 0 auto;min-width:44px}
 .bcol button.sq{width:44px;height:44px;min-height:44px;padding:0;font-size:13px;
   display:flex;align-items:center;justify-content:center;line-height:1}
 .cap{font-size:10px;color:var(--fg3);white-space:nowrap;line-height:1.25;text-align:center}
-.brow button{flex:1;padding:12px 6px;font-size:14px}
-#play{flex:0 0 auto;min-width:104px}
-#loop{flex:0 0 auto;padding:10px 12px}
-#bpm{width:78px;flex:0 0 auto;font-size:15px;color:var(--fg);background:var(--panel);
-  border:1px solid var(--line2);border-radius:10px;padding:10px 8px;min-height:44px}
-#bpmms{font-size:11px;color:var(--fg3);font-family:ui-monospace,Menlo,monospace}
+
+#bar .caps{align-items:flex-start}
+#bar .caps .bcol button.sq,#bar .caps input.sq{height:38px;min-height:38px}
+input.sq{width:44px;padding:0;font-size:14px;text-align:center;color:var(--fg);
+  background:transparent;border:1px solid var(--line2);border-radius:8px}
+input.sq::-webkit-outer-spin-button,input.sq::-webkit-inner-spin-button{
+  -webkit-appearance:none;margin:0}
+input.sq{-moz-appearance:textfield}
+
 #bpmlab{transition:color .16s ease,text-shadow .16s ease}
-#bpmlab.beat{color:var(--fg);text-shadow:0 0 7px rgba(230,228,222,.45)}
-#step{flex:1.6 !important;background:rgba(93,202,165,.14);border-color:var(--teal);color:var(--teal)}
+#bpmlab.beat{color:var(--fg);text-shadow:0 0 6px rgba(230,228,222,.5)}
+#step{background:rgba(93,202,165,.14);border-color:var(--teal);color:var(--teal)}
 </style>
 </head>
 <body>
@@ -102,10 +111,10 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 <h1>ホロホロウォーカー</h1>
 <p class="sub">テスト版。ノードを押すと行き先が前に出る。図は横にスクロールする。</p>
 
-<div id="scroller"><div id="pad"><div id="board">
+<div id="scroller"><div id="fit"><div id="pad"><div id="board">
   <img id="bgimg" alt="">
   <svg id="wires" viewBox="0 0 680 540"></svg>
-</div></div></div>
+</div></div></div></div>
 
 <div class="leg">
 <span><i style="background:var(--teal)"></i>ダイアトニック</span>
@@ -115,6 +124,8 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 <span><i style="background:var(--pink)"></i>借用</span>
 </div>
 
+<div id="out"></div>
+<div id="cur"></div>
 <div id="ctl">
 <div class="row" id="selrow">
   <span class="lab">キー</span><select id="key"></select>
@@ -126,6 +137,23 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
   <select id="blk"><option value="0" selected>なし</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select>
 </div>
 
+<div id="btns">
+  <div class="bcol"><button id="startmode" class="sq act">ON</button><span class="cap">主和音<br>開始</span></div>
+  <div class="bcol"><button id="gen" class="sq">生成</button><span class="cap">&nbsp;</span></div>
+  <div class="bcol"><button id="agen" class="sq" title="自動再生中に、和音を鳴らした個数ごとに進行を作り直す。Shift+クリックで逆送り">無</button><span class="cap">自動<br>生成</span></div>
+  <div class="bcol"><button id="reroll" class="sq">〓</button><span class="cap">積直し</span></div>
+  <div class="bcol"><button id="areroll" class="sq" title="自動再生中に、和音を鳴らした個数ごとに積み直しを自動で押す。Shift+クリックで逆送り">なし</button><span class="cap">自動<br>積直し</span></div>
+  <div class="bcol"><button id="degb" class="sq act">ON</button><span class="cap">度数表示</span></div>
+  <div class="bcol"><button id="cnb" class="sq act">ON</button><span class="cap">コード名</span></div>
+  <div class="bcol"><button id="engb" class="sq act">ON</button><span class="cap">声再生</span></div>
+</div>
+
+<div id="btns2">
+  <div class="bcol"><button id="nmb" class="sq">OFF</button><span class="cap">キャラ名</span></div>
+  <div class="bcol"><button id="c3b" class="sq">OFF</button><span class="cap">折返し3</span></div>
+  <div class="bcol"><button id="copy" class="sq">C</button><span class="cap">進行コピー</span></div>
+  <div class="bcol"><button id="copyrun" class="sq">0</button><span class="cap">演奏コピー</span></div>
+</div>
 <div class="row">
   <span class="lab">素直</span><input type="range" id="w" min="0" max="100" step="1" value="20">
   <span class="lab">変</span><span class="val" id="wv">20</span>
@@ -147,52 +175,22 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 
 </div>
 
-<div id="btns">
-  <div class="bcol"><button id="startmode" class="sq act">ON</button><span class="cap">主和音開始</span></div>
-  <div class="bcol"><button id="gen" class="sq">生成</button><span class="cap">&nbsp;</span></div>
-  <div class="bcol"><button id="agen" class="sq" title="自動再生中に、和音を鳴らした個数ごとに生成を自動で押す。Shift+クリックで逆送り">無</button><span class="cap">自動<br>生成</span></div>
-  <div class="bcol"><button id="reroll" class="sq">〓</button><span class="cap">積直し</span></div>
-  <div class="bcol"><button id="areroll" class="sq" title="自動再生中に、和音を鳴らした個数ごとに積み直しを自動で押す。Shift+クリックで逆送り">なし</button><span class="cap">自動<br>積直し</span></div>
-  <div class="bcol"><button id="degb" class="sq act">ON</button><span class="cap">度数表示</span></div>
-  <div class="bcol"><button id="cnb" class="sq act">ON</button><span class="cap">コード名</span></div>
-  <div class="bcol"><button id="engb" class="sq act">ON</button><span class="cap">声再生</span></div>
-</div>
-
 <div id="perf">サンプル読み込み中</div>
 
-<div class="leg leg2">
-<span><i style="background:var(--teal)"></i>ダイアトニック</span>
-<span><i style="background:var(--amber)"></i>セカンダリードミナント</span>
-<span><i style="background:var(--coral)"></i>裏コード</span>
-<span><i style="background:var(--purple)"></i>ディミニッシュ</span>
-<span><i style="background:var(--pink)"></i>借用</span>
-</div>
-<div id="out"></div>
-<div id="btns2">
-  <div class="bcol"><button id="nmb" class="sq act">ON</button><span class="cap">キャラ名</span></div>
-  <div class="bcol"><button id="c3b" class="sq">OFF</button><span class="cap">折返し3</span></div>
-  <div class="bcol"><button id="copy" class="sq">C</button><span class="cap">進行コピー</span></div>
-  <div class="bcol"><button id="copyrun" class="sq">0</button><span class="cap">演奏コピー</span></div>
-</div>
-<div id="cur"></div>
 <p class="hint">音が出ないときは本体の消音スイッチを確認。画面を一度タップしてから鳴りはじめる。
 進行の最後まで来ると、リングが最寄りの整列位置へ寄って止まる。</p>
 
 <div id="bar">
-  <div class="brow">
-    <button id="play">自動再生</button>
-    <span class="lab" id="bpmlab">BPM</span>
-    <input type="number" id="bpm" value="90" min="30" max="240" step="1">
-    <select id="beats"><option value="1">1拍</option><option value="2" selected>2拍</option>
-      <option value="3">3拍</option><option value="4">4拍</option></select>
-    <button id="loop">繰り返し</button>
-    <span class="lab" id="bpmms"></span>
-  </div>
-  <div class="brow">
+  <div class="brow caps">
+    <div class="bcol"><button id="play" class="sq">OFF</button><span class="cap">自動再生</span></div>
+    <div class="bcol"><input type="number" id="bpm" class="sq" value="90" min="30" max="240" step="1"><span class="cap" id="bpmlab">BPM</span></div>
+    <div class="bcol"><button id="beats" class="sq">2</button><span class="cap">拍数</span></div>
+    <div class="bcol"><button id="loop" class="sq">OFF</button><span class="cap">繰返し</span></div>
+    <div class="rd"><span id="pos"></span><span id="bpmms"></span></div>
     <button id="back">戻る</button>
     <button id="step">次へ</button>
     <button id="again">連打</button>
-    <button id="top">頭から</button>
+    <button id="top">頭出</button>
   </div>
 </div>
 </div>
@@ -273,7 +271,7 @@ var VI={}, VN=VIS.nodes;
 VN.forEach(function(n,i){n.i=i;VI[n.code]=n;});
 var board=document.getElementById('board'), wires=document.getElementById('wires');
 var sc=document.getElementById('scroller');
-var nodeEl={}, anim={}, cnAnim={}, stopped={}, showCode=true, showName=true, cols3=false, faceTier={};
+var nodeEl={}, anim={}, cnAnim={}, stopped={}, showCode=true, showName=false, cols3=false, faceTier={};
 var lines={},prog=[],idx=-1,fixC=true;
 var keys=Object.keys(N);
 var fifthSet={};VIS.fifth.forEach(function(f){fifthSet[VN[f[0]].code+'_'+VN[f[1]].code]=1;});
@@ -514,16 +512,16 @@ prog=prog.map(function(c,i){return{n:c.n,tier:rollTierAt(i,prog.length)};});
 buildProgTier();}
 /* 手で押したときは、その場で表示も更新する */
 function reroll(){rerollTiers();render();hl();relabel();blkInfo();}
-function walk(keepIndex){var oldIdx=idx,n=num('len');
+function walkGen(){var n=num('len');
 var cu=fixC?'C':keys[Math.floor(Math.random()*keys.length)],r=[cu];
 for(var i=1;i<n;i++){var o=lines[cu]||[];if(!o.length){cu='C';r.push('C');continue;}
 var kk=1-2*walkP(i,n);                     /* 段ごとに素直⇄変が動く */
 var ws=o.map(function(e){return Math.pow(e.w,kk);}),s=ws.reduce(function(a,b){return a+b;},0),x=Math.random()*s,j=0;
 while(x>ws[j]&&j<o.length-1){x-=ws[j];j++;}cu=o[j].b;r.push(cu);}
 blockRand=[];prog=r.map(function(c,i){return{n:c,tier:rollTierAt(i,r.length)};});
-/* 自動生成では再生位置を保つ。末尾なら通常の周回と同じく次を先頭にする */
-idx=keepIndex===true&&oldIdx>=0&&oldIdx<r.length-1?oldIdx:-1;
-faceTier={};buildProgTier();render();hl();pick(prog[Math.max(0,idx)].n);}
+faceTier={};buildProgTier();
+if(idx>=prog.length)idx=prog.length-1;}
+function walk(){walkGen();idx=-1;render();hl();blkInfo();pick(prog[0].n);}
 function render(){var o=document.getElementById('out');o.innerHTML='';
 var solo=degMode&&!showCode, dfs=0;
 if(solo){
@@ -552,7 +550,8 @@ for(var j=0;j<cs.length;j++){var e=cs[j];
     e.style.color=c;e.style.borderColor=c;e.style.background=rgba(c,0.22);}
   else{                              /* 待機と済み … 枠と文字に段の色を薄く乗せる */
     e.style.color=rgba(c,0.70);e.style.borderColor=rgba(c,0.40);e.style.background='';}}
-document.getElementById('step').textContent=(idx>=prog.length-1?'頭に戻る':'次へ')+'  '+(idx+1)+'/'+prog.length;}
+document.getElementById('step').textContent=idx>=prog.length-1?'頭へ':'次へ';
+document.getElementById('pos').textContent=(idx+1)+'/'+prog.length;}
 var ac=null,live=[];
 /* ── サンプラー ─────────────────────────────
    Synthesizer V から書き出した9本。ピークの0.2%を立ち上がりとみなし、その20ms手前から切って
@@ -713,9 +712,12 @@ document.getElementById('reroll').onclick=reroll;
 document.getElementById('step').onclick=function(){go(1);};
 /* ── 自動再生。1拍にコード1個 ── */
 var pTimer=null,pNext=0;
+var beatsN=2;
 function bpmMs(){var b=Math.min(240,Math.max(30,+document.getElementById('bpm').value||90));
-return 60000/b*(+document.getElementById('beats').value||1);}
-function showBpm(){document.getElementById('bpmms').textContent=Math.round(bpmMs())+'ms';}
+return 60000/b*beatsN;}
+function showBpm(){var ms=Math.round(bpmMs());
+document.getElementById('bpm').title=ms+'ms / 和音1個';
+document.getElementById('bpmms').textContent=ms+'ms';}
 var bTimer=null,bNext=0;
 function beatTick(){
   var one=60000/Math.min(240,Math.max(30,+document.getElementById('bpm').value||90));
@@ -729,8 +731,8 @@ function stopBeat(){if(bTimer){clearTimeout(bTimer);bTimer=null;}
 document.getElementById('bpmlab').classList.remove('beat');}
 function stopPlay(){if(pTimer){clearTimeout(pTimer);pTimer=null;}
 stopBeat();
-var b=document.getElementById('play');b.textContent='自動再生';b.className='';}
-var loopOn=false, arCount=0, agCount=0, pendingView=false, pendingGenerate=false;
+tog(document.getElementById('play'),false);}
+var loopOn=false, arCount=0, pendingView=false;
 /* 自動再生が鳴らしたものだけを控える。手で押した 戻る・次へ・連打・頭から や
    盤面の顔は入らない。繰り返しの周ごとに区切りを入れる。停止しても消さない */
 var hist=[];
@@ -749,27 +751,22 @@ b.textContent=''+n;b.disabled=!n;b.style.opacity=n?1:0.4;}
 /* 自動積み直し。数える単位は和音の個数で、上の「個数」と同じ。拍数は関係しない。
    押すごとに順送り、Shift+クリックで逆送り */
 var AR=['0','loop'], ARL=['無','1周'];
+var agIdx=0, agCount=0;
+function agVal(){return AR[agIdx];}
+function agSync(){var b=document.getElementById('agen');
+b.textContent=ARL[agIdx];b.className='sq'+(agIdx?' act':'');}
 for(var q=2;q<=16;q++){AR.push(''+q);ARL.push(''+q);}
 var arIdx=0;
 function arVal(){return AR[arIdx];}
 function arSync(){var b=document.getElementById('areroll');
 b.textContent=ARL[arIdx];b.className='sq'+(arIdx?' act':'');}
-/* 自動生成。周期の表し方は自動積み直しと共通。
-   個数指定では、指定個数目を鳴らし終えた次の発音から新しい進行へ切り替える。 */
-var agIdx=0;
-function agVal(){return AR[agIdx];}
-function agSync(){var b=document.getElementById('agen');
-b.textContent=ARL[agIdx];b.className='sq'+(agIdx?' act':'');}
 function autoStep(){
   if(!prog.length){stopPlay();return;}
-  if(pendingGenerate){                    /* 再生位置を保ったまま、次の発音直前に進行を作り直す */
-    pendingGenerate=false;pendingView=false;hist.push({br:1});walk(true);
-  }
   if(idx>=prog.length-1){                 /* 1周した */
     if(!loopOn){stopPlay();return;}
     idx=-1;hist.push({br:1});             /* 繰り返しなら頭へ。周の区切りを入れる */
-    if(agVal()==='loop')walk();
-    if(arVal()==='loop'){rerollTiers();pendingView=true;}
+    if(agVal()==='loop'){walkGen();pendingView=true;}
+    else if(arVal()==='loop'){rerollTiers();pendingView=true;}
   }
   idx++;
   if(pendingView){pendingView=false;render();blkInfo();}  /* 音と表示を揃える */
@@ -779,14 +776,9 @@ function autoStep(){
   playChord(prog[idx]);
   hist.push({n:prog[idx].n,tier:prog[idx].tier});histSync();
   var ag=agVal();
-  if(ag!=='loop'&&+ag>0&&++agCount>=+ag){
-    agCount=0;pendingGenerate=true;pendingView=false;
-  }
+  if(ag!=='loop'&&+ag>0&&++agCount>=+ag){agCount=0;walkGen();pendingView=true;}
   var ar=arVal();
-  if(ar!=='loop'&&+ar>0&&++arCount>=+ar){
-    arCount=0;
-    if(!pendingGenerate){rerollTiers();pendingView=true;}
-  }
+  if(ar!=='loop'&&+ar>0&&++arCount>=+ar){arCount=0;rerollTiers();pendingView=true;}
   if(last&&!loopOn){stopPlay();return;}
   pNext+=bpmMs();
   pTimer=setTimeout(autoStep,Math.max(20,pNext-performance.now()));
@@ -794,18 +786,16 @@ function autoStep(){
 function startPlay(){
   if(!prog.length)return;
   if(idx<0||idx>=prog.length-1)idx=-1;
-  var b=document.getElementById('play');b.textContent='停止';b.className='act';
-  arCount=0;agCount=0;pendingView=false;pendingGenerate=false;hist=[];histSync();
+  tog(document.getElementById('play'),true);
+  arCount=0;agCount=0;pendingView=false;hist=[];histSync();
   pNext=performance.now();bNext=pNext;beatTick();autoStep();
 }
 document.getElementById('play').onclick=function(){pTimer?stopPlay():startPlay();};
-document.getElementById('loop').onclick=function(){loopOn=!loopOn;
-this.className=loopOn?'act':'';};
+document.getElementById('loop').onclick=function(){loopOn=!loopOn;tog(this,loopOn);};
 document.getElementById('areroll').onclick=function(e){
   arIdx=(arIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;arCount=0;arSync();};
 document.getElementById('agen').onclick=function(e){
-  agIdx=(agIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;
-  agCount=0;pendingGenerate=false;agSync();};
+  agIdx=(agIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;agCount=0;agSync();};
 document.getElementById('copyrun').onclick=function(){
   if(!histCount())return;
   var t=histText(),b=this,old=b.textContent;
@@ -815,7 +805,8 @@ document.getElementById('copyrun').onclick=function(){
       function(){document.getElementById('cur').textContent=t;});
   } else document.getElementById('cur').textContent=t;};
 document.getElementById('bpm').oninput=showBpm;
-document.getElementById('beats').onchange=showBpm;
+document.getElementById('beats').onclick=function(){
+  beatsN=beatsN%4+1;this.textContent=''+beatsN;showBpm();};
 document.getElementById('back').onclick=function(){go(-1);};
 /* いま鳴っているコマを、進めずにもう一度鳴らす */
 document.getElementById('again').onclick=function(){
@@ -845,7 +836,18 @@ document.getElementById('amp2').oninput=function(){
   document.getElementById('a2v').textContent=this.value;blkInfo();};
 document.getElementById('amp2').onchange=function(){blkInfo();reroll();};
 document.getElementById('len').onchange=function(){blkInfo();};
-bgSet();relabel();walk();blkInfo();showBpm();arSync();agSync();histSync();initSamp();
+/* 盤面は680px固定。画面がそれより狭いときだけ、はみ出さないように縮める。
+   広いときは等倍のままにして、拡大はしない */
+function fitBoard(){
+  var w=document.getElementById('scroller').clientWidth;
+  var k=Math.min(1,w/680), p=document.getElementById('pad'), f=document.getElementById('fit');
+  if(k>=1){p.style.transform='';f.style.width='680px';f.style.height='';}
+  else{p.style.transform='scale('+k.toFixed(4)+')';
+    f.style.width=Math.floor(680*k)+'px';f.style.height=Math.ceil(660*k)+'px';}
+}
+window.addEventListener('resize',fitBoard);
+window.addEventListener('orientationchange',function(){setTimeout(fitBoard,120);});
+bgSet();relabel();walk();blkInfo();showBpm();arSync();agSync();histSync();fitBoard();initSamp();
 })();
 </script>
 </body>
