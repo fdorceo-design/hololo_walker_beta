@@ -327,7 +327,7 @@ function mkNode(code){
   rot.appendChild(tx);el.appendChild(rot);
   var cn=document.createElement('div');cn.className='cn';cn.style.color=col;
   el.appendChild(cn);
-  el._rot=rot;el._cn=cn;el._n=n;
+  el._rot=rot;el._cn=cn;el._n=n;el._x=p[0];el._cnDx=0;
   el.onclick=function(){
     /* 進行にも履歴にも無い顔だけ、その場で積みを振る */
     if(faceTier[code]===undefined&&progTier[code]===undefined)faceTier[code]=rollTier();
@@ -362,10 +362,11 @@ function popCn(code){
   var c=el._cn,fs=parseFloat(c.style.fontSize)||20;
   var up=-5-Math.round(fs*0.75), hold=250, fall=1500, tot=hold+fall;
   if(cnAnim[code]){cnAnim[code].cancel();cnAnim[code]=null;}
+  var dx=el._cnDx||0;
   cnAnim[code]=c.animate([
-    {transform:'translate(-50%,'+up+'px)',easing:'linear',offset:0},
-    {transform:'translate(-50%,'+up+'px)',easing:'cubic-bezier(.33,0,.15,1)',offset:hold/tot},
-    {transform:'translate(-50%,-5px)',offset:1}],
+    {transform:tf(dx,up),easing:'linear',offset:0},
+    {transform:tf(dx,up),easing:'cubic-bezier(.33,0,.15,1)',offset:hold/tot},
+    {transform:tf(dx,-5),offset:1}],
     {duration:tot});
 }
 function sizeFor(w){return w<=2?60:(w<=4?80:100);}
@@ -374,6 +375,19 @@ function sizeFor(w){return w<=2?60:(w<=4?80:100);}
 /* 60px を基準に、文字は顔の拡大率より少し速く大きくする。
    顔は 60→156 で 2.6倍。指数1.12 で文字は約2.9倍になり、
    顔より前に浮いて見える。食い込みは5pxのまま */
+/* ピルが盤面の左右をはみ出すと #scroller に切られる。
+   ♭ や ° は等幅フォントに無くて代替に落ちるため、幅は計算せず offsetWidth で実測する。
+   offsetWidth は transform:scale() の影響を受けないので、盤面の座標系そのままで比べられる */
+function tf(dx,y){return 'translate(-50%,'+y+'px) translateX('+dx+'px)';}
+function cnFix(el,y){
+  var c=el._cn;
+  c.style.transform=tf(0,y);
+  var w=c.offsetWidth, x=el._x, dx=0;
+  if(x-w/2<4)dx=4-(x-w/2);
+  else if(x+w/2>676)dx=676-(x+w/2);
+  el._cnDx=Math.round(dx);
+  if(dx)c.style.transform=tf(el._cnDx,y);
+}
 function cnStyle(el,sz){
   var c=el._cn, col=TCOL[el._n.row];
   c.style.top=(sz*0.97).toFixed(1)+'px';
@@ -383,21 +397,22 @@ function cnStyle(el,sz){
     fs=Math.min(fs,Math.round(sz*1.6/(len*0.62)));   /* 横幅は本人の1.6倍まで */
     fs=Math.max(fs,14);
     c.style.fontSize=fs+'px';
-    c.style.padding=Math.round(fs*0.1)+'px '+Math.round(fs*0.38)+'px';
+    var px=Math.round(fs*0.38);
+    c.style.padding=Math.round(fs*0.1)+'px '+px+'px';
     c.style.borderRadius=Math.round(fs*0.42)+'px';
-    c.style.transform='translate(-50%,-5px)';
-    c.style.boxShadow='0 '+Math.round(fs*0.12)+'px '+Math.round(fs*0.4)+'px rgba(0,0,0,.6)';
     c.style.background='rgba(15,17,19,.9)';
+    c.style.boxShadow='0 '+Math.round(fs*0.12)+'px '+Math.round(fs*0.4)+'px rgba(0,0,0,.6)';
     c.style.border='2px solid '+col;
+    cnFix(el,-5);
   }
   else if(sz>=100){c.style.fontSize='13.5px';
     c.style.padding='2px 7px';c.style.borderRadius='7px';
-    c.style.transform='translate(-50%,3px)';
     c.style.boxShadow='0 2px 6px rgba(0,0,0,.5)';
     c.style.background='rgba(15,17,19,.9)';
-    c.style.border='1.5px solid '+col;}
+    c.style.border='1.5px solid '+col;
+    cnFix(el,3);}
   else {c.style.fontSize='';c.style.padding='';c.style.borderRadius='';
-    c.style.transform='translate(-50%,3px)';
+    c.style.transform=tf(0,3);el._cnDx=0;
     c.style.boxShadow='';c.style.background='';c.style.border='';}
 }
 function reveal(code){
