@@ -20,10 +20,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP"
 .wrap{max-width:760px;margin:0 auto}
 h1{font-size:17px;font-weight:500;margin:0 0 2px}
 .sub{font-size:12px;color:var(--fg3);margin:0 0 12px}
+#ver{font-family:ui-monospace,Menlo,monospace;color:var(--teal);opacity:.75}
 #scroller{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
   margin:0 -12px;padding:0 12px;scrollbar-width:thin}
-#fit{width:680px}
-#pad{width:680px;padding:44px 0 76px;position:relative;transform-origin:top left}
+#pad{width:680px;padding:44px 0 76px;position:relative}
 #board{position:relative;width:680px;height:540px}
 #bgimg{position:absolute;pointer-events:none;transform-origin:0 0}
 #wires{position:absolute;inset:0;pointer-events:none;overflow:visible}
@@ -39,7 +39,8 @@ h1{font-size:17px;font-weight:500;margin:0 0 2px}
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.3;
   white-space:nowrap;pointer-events:none;padding:1px 5px;border-radius:6px;
   background:rgba(15,17,19,.82);border:1px solid var(--line);
-  transition:top .22s cubic-bezier(.2,.9,.25,1),box-shadow .22s ease}
+  transition:font-size .22s cubic-bezier(.2,.9,.25,1),padding .22s cubic-bezier(.2,.9,.25,1),
+             top .22s cubic-bezier(.2,.9,.25,1),box-shadow .22s ease}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--fg3);margin:6px 0 16px}
 .leg2{max-width:480px;margin:18px 0 8px}
 .leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:1px}
@@ -82,44 +83,42 @@ input[type=range]{flex:1;min-width:80px;height:32px;accent-color:var(--teal);bac
 .brow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .brow>button{flex:0 0 auto;width:44px;height:38px;min-height:38px;padding:0;font-size:13px;
   display:flex;align-items:center;justify-content:center}
-.rd{display:flex;flex-direction:column;justify-content:center;gap:2px;
-  font-size:11px;color:var(--fg3);font-family:ui-monospace,Menlo,monospace;
-  line-height:1.25;height:38px;margin:0 4px;min-width:44px;text-align:center}
+#bar .caps{align-items:flex-start}
+#bar .caps .bcol button.sq,#bar .caps input.sq{height:38px;min-height:38px}
+input.sq{width:44px;padding:0;font-size:14px;text-align:center;color:var(--fg);
+  background:transparent;border:1px solid var(--line2);border-radius:8px}
+input.sq::-webkit-outer-spin-button,input.sq::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.sq{-moz-appearance:textfield}
+.rd{display:flex;flex-direction:column;justify-content:center;gap:2px;height:38px;
+  min-width:44px;margin:0 4px;text-align:center;
+  font-size:11px;color:var(--fg3);font-family:ui-monospace,Menlo,monospace;line-height:1.25}
 #btns,#btns2{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;align-items:flex-start}
-#btns{margin:2px 0 16px}
-#btns2{margin:0 0 16px}
+#btns2{margin:10px 0 14px}
 .bcol{display:flex;flex-direction:column;align-items:center;gap:3px;flex:0 0 auto;min-width:44px}
 .bcol button.sq{width:44px;height:44px;min-height:44px;padding:0;font-size:13px;
   display:flex;align-items:center;justify-content:center;line-height:1}
 .cap{font-size:10px;color:var(--fg3);white-space:nowrap;line-height:1.25;text-align:center}
 
-#bar .caps{align-items:flex-start}
-#bar .caps .bcol button.sq,#bar .caps input.sq{height:38px;min-height:38px}
-input.sq{width:44px;padding:0;font-size:14px;text-align:center;color:var(--fg);
-  background:transparent;border:1px solid var(--line2);border-radius:8px}
-input.sq::-webkit-outer-spin-button,input.sq::-webkit-inner-spin-button{
-  -webkit-appearance:none;margin:0}
-input.sq{-moz-appearance:textfield}
-
 #bpmlab{transition:color .16s ease,text-shadow .16s ease}
-#bpmlab.beat{color:var(--fg);text-shadow:0 0 6px rgba(230,228,222,.5)}
+#bpmlab.beat{color:var(--fg);text-shadow:0 0 7px rgba(230,228,222,.45)}
 #step{background:rgba(93,202,165,.14);border-color:var(--teal);color:var(--teal)}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1>ホロホロウォーカー</h1>
-<p class="sub">テスト版。ノードを押すと行き先が前に出る。図は横にスクロールする。</p>
+<p class="sub">テスト版。ノードを押すと行き先が前に出る。図は横にスクロールする。<br>
+<span id="ver">v84 &nbsp; c18e620 / 08-25</span></p>
 
-<div id="scroller"><div id="fit"><div id="pad"><div id="board">
+<div id="scroller"><div id="pad"><div id="board">
   <img id="bgimg" alt="">
   <svg id="wires" viewBox="0 0 680 540"></svg>
-</div></div></div></div>
+</div></div></div>
 
 <div class="leg">
-<span><i style="background:var(--teal)"></i>ダイアトニック</span>
-<span><i style="background:var(--amber)"></i>セカンダリーD</span>
-<span><i style="background:var(--coral)"></i>裏コード</span>
+<span><i style="background:var(--teal)"></i>基本</span>
+<span><i style="background:var(--amber)"></i>ドミナント</span>
+<span><i style="background:var(--coral)"></i>裏</span>
 <span><i style="background:var(--purple)"></i>Dim</span>
 <span><i style="background:var(--pink)"></i>借用</span>
 </div>
@@ -140,7 +139,7 @@ input.sq{-moz-appearance:textfield}
 <div id="btns">
   <div class="bcol"><button id="startmode" class="sq act">ON</button><span class="cap">主和音<br>開始</span></div>
   <div class="bcol"><button id="gen" class="sq">生成</button><span class="cap">&nbsp;</span></div>
-  <div class="bcol"><button id="agen" class="sq" title="自動再生中に、和音を鳴らした個数ごとに進行を作り直す。Shift+クリックで逆送り">無</button><span class="cap">自動<br>生成</span></div>
+  <div class="bcol"><button id="agen" class="sq" title="自動再生中に、和音を鳴らした個数ごとに生成を自動で押す。Shift+クリックで逆送り">無</button><span class="cap">自動<br>生成</span></div>
   <div class="bcol"><button id="reroll" class="sq">〓</button><span class="cap">積直し</span></div>
   <div class="bcol"><button id="areroll" class="sq" title="自動再生中に、和音を鳴らした個数ごとに積み直しを自動で押す。Shift+クリックで逆送り">なし</button><span class="cap">自動<br>積直し</span></div>
   <div class="bcol"><button id="degb" class="sq act">ON</button><span class="cap">度数表示</span></div>
@@ -326,7 +325,7 @@ function mkNode(code){
   rot.appendChild(tx);el.appendChild(rot);
   var cn=document.createElement('div');cn.className='cn';cn.style.color=col;
   el.appendChild(cn);
-  el._rot=rot;el._cn=cn;el._n=n;el._x=p[0];
+  el._rot=rot;el._cn=cn;el._n=n;
   el.onclick=function(){
     /* 進行にも履歴にも無い顔だけ、その場で積みを振る */
     if(faceTier[code]===undefined&&progTier[code]===undefined)faceTier[code]=rollTier();
@@ -362,9 +361,9 @@ function popCn(code){
   var up=-5-Math.round(fs*0.75), hold=250, fall=1500, tot=hold+fall;
   if(cnAnim[code]){cnAnim[code].cancel();cnAnim[code]=null;}
   cnAnim[code]=c.animate([
-    {transform:tf(up),easing:'linear',offset:0},
-    {transform:tf(up),easing:'cubic-bezier(.33,0,.15,1)',offset:hold/tot},
-    {transform:tf(-5),offset:1}],
+    {transform:'translate(-50%,'+up+'px)',easing:'linear',offset:0},
+    {transform:'translate(-50%,'+up+'px)',easing:'cubic-bezier(.33,0,.15,1)',offset:hold/tot},
+    {transform:'translate(-50%,-5px)',offset:1}],
     {duration:tot});
 }
 function sizeFor(w){return w<=2?60:(w<=4?80:100);}
@@ -373,21 +372,6 @@ function sizeFor(w){return w<=2?60:(w<=4?80:100);}
 /* 60px を基準に、文字は顔の拡大率より少し速く大きくする。
    顔は 60→156 で 2.6倍。指数1.12 で文字は約2.9倍になり、
    顔より前に浮いて見える。食い込みは5pxのまま */
-/* ピルが盤面の左右をはみ出すと #scroller に切られる。
-   ♭ や ° は等幅フォントに無くて代替に落ちるため、幅は計算せず offsetWidth で実測する。
-   offsetWidth は transform:scale() の影響を受けないので、盤面の座標系そのままで比べられる */
-function tf(y){return 'translate(-50%,'+y+'px)';}
-function cnFix(el,y){
-  var c=el._cn;
-  c.style.transform=tf(y);
-  /* offsetWidth は margin を含まないので、いま入っている margin を戻す必要はない。
-     scale の影響も受けないため、盤面の座標系そのままで比べられる */
-  var w=c.offsetWidth, x=el._x, dx=0;
-  if(x-w/2<4)dx=4-(x-w/2);
-  else if(x+w/2>676)dx=676-(x+w/2);
-  dx=Math.round(dx);
-  if(c._dx!==dx){c._dx=dx;c.style.marginLeft=dx+'px';}   /* 同じ値なら触らない */
-}
 function cnStyle(el,sz){
   var c=el._cn, col=TCOL[el._n.row];
   c.style.top=(sz*0.97).toFixed(1)+'px';
@@ -397,23 +381,21 @@ function cnStyle(el,sz){
     fs=Math.min(fs,Math.round(sz*1.6/(len*0.62)));   /* 横幅は本人の1.6倍まで */
     fs=Math.max(fs,14);
     c.style.fontSize=fs+'px';
-    var px=Math.round(fs*0.38);
-    c.style.padding=Math.round(fs*0.1)+'px '+px+'px';
+    c.style.padding=Math.round(fs*0.1)+'px '+Math.round(fs*0.38)+'px';
     c.style.borderRadius=Math.round(fs*0.42)+'px';
-    c.style.background='rgba(15,17,19,.9)';
+    c.style.transform='translate(-50%,-5px)';
     c.style.boxShadow='0 '+Math.round(fs*0.12)+'px '+Math.round(fs*0.4)+'px rgba(0,0,0,.6)';
+    c.style.background='rgba(15,17,19,.9)';
     c.style.border='2px solid '+col;
-    cnFix(el,-5);
   }
   else if(sz>=100){c.style.fontSize='13.5px';
     c.style.padding='2px 7px';c.style.borderRadius='7px';
+    c.style.transform='translate(-50%,3px)';
     c.style.boxShadow='0 2px 6px rgba(0,0,0,.5)';
     c.style.background='rgba(15,17,19,.9)';
-    c.style.border='1.5px solid '+col;
-    cnFix(el,3);}
+    c.style.border='1.5px solid '+col;}
   else {c.style.fontSize='';c.style.padding='';c.style.borderRadius='';
-    c.style.transform=tf(3);
-    if(c._dx!==0){c._dx=0;c.style.marginLeft='0px';}
+    c.style.transform='translate(-50%,3px)';
     c.style.boxShadow='';c.style.background='';c.style.border='';}
 }
 function reveal(code){
@@ -456,7 +438,8 @@ function pick(code,quiet,last){
     el.style.width=sz+'px';el.style.height=sz+'px';
     el.style.opacity=dim?DK:1;el.style.zIndex=Math.round(sz);
     if(cnAnim[c]){cnAnim[c].cancel();cnAnim[c]=null;}
-    spin(c,sz);   /* コード名は relabel() で文字が確定してから一度だけ組み直す */
+    cnStyle(el,sz);
+    spin(c,sz);
   });
   if(last)cadence(code);
   relabel();
@@ -530,16 +513,16 @@ prog=prog.map(function(c,i){return{n:c.n,tier:rollTierAt(i,prog.length)};});
 buildProgTier();}
 /* 手で押したときは、その場で表示も更新する */
 function reroll(){rerollTiers();render();hl();relabel();blkInfo();}
-function walkGen(){var n=num('len');
+function walk(keepIndex){var oldIdx=idx,n=num('len');
 var cu=fixC?'C':keys[Math.floor(Math.random()*keys.length)],r=[cu];
 for(var i=1;i<n;i++){var o=lines[cu]||[];if(!o.length){cu='C';r.push('C');continue;}
 var kk=1-2*walkP(i,n);                     /* 段ごとに素直⇄変が動く */
 var ws=o.map(function(e){return Math.pow(e.w,kk);}),s=ws.reduce(function(a,b){return a+b;},0),x=Math.random()*s,j=0;
 while(x>ws[j]&&j<o.length-1){x-=ws[j];j++;}cu=o[j].b;r.push(cu);}
 blockRand=[];prog=r.map(function(c,i){return{n:c,tier:rollTierAt(i,r.length)};});
-faceTier={};buildProgTier();
-if(idx>=prog.length)idx=prog.length-1;}
-function walk(){walkGen();idx=-1;render();hl();blkInfo();pick(prog[0].n);}
+/* 自動生成では再生位置を保つ。末尾なら通常の周回と同じく次を先頭にする */
+idx=keepIndex===true&&oldIdx>=0&&oldIdx<r.length-1?oldIdx:-1;
+faceTier={};buildProgTier();render();hl();pick(prog[Math.max(0,idx)].n);}
 function render(){var o=document.getElementById('out');o.innerHTML='';
 var solo=degMode&&!showCode, dfs=0;
 if(solo){
@@ -733,9 +716,7 @@ var pTimer=null,pNext=0;
 var beatsN=2;
 function bpmMs(){var b=Math.min(240,Math.max(30,+document.getElementById('bpm').value||90));
 return 60000/b*beatsN;}
-function showBpm(){var ms=Math.round(bpmMs());
-document.getElementById('bpm').title=ms+'ms / 和音1個';
-document.getElementById('bpmms').textContent=ms+'ms';}
+function showBpm(){document.getElementById('bpmms').textContent=Math.round(bpmMs())+'ms';}
 var bTimer=null,bNext=0;
 function beatTick(){
   var one=60000/Math.min(240,Math.max(30,+document.getElementById('bpm').value||90));
@@ -750,7 +731,7 @@ document.getElementById('bpmlab').classList.remove('beat');}
 function stopPlay(){if(pTimer){clearTimeout(pTimer);pTimer=null;}
 stopBeat();
 tog(document.getElementById('play'),false);}
-var loopOn=false, arCount=0, pendingView=false;
+var loopOn=false, arCount=0, agCount=0, pendingView=false, pendingGenerate=false;
 /* 自動再生が鳴らしたものだけを控える。手で押した 戻る・次へ・連打・頭から や
    盤面の顔は入らない。繰り返しの周ごとに区切りを入れる。停止しても消さない */
 var hist=[];
@@ -769,22 +750,27 @@ b.textContent=''+n;b.disabled=!n;b.style.opacity=n?1:0.4;}
 /* 自動積み直し。数える単位は和音の個数で、上の「個数」と同じ。拍数は関係しない。
    押すごとに順送り、Shift+クリックで逆送り */
 var AR=['0','loop'], ARL=['無','1周'];
-var agIdx=0, agCount=0;
-function agVal(){return AR[agIdx];}
-function agSync(){var b=document.getElementById('agen');
-b.textContent=ARL[agIdx];b.className='sq'+(agIdx?' act':'');}
 for(var q=2;q<=16;q++){AR.push(''+q);ARL.push(''+q);}
 var arIdx=0;
 function arVal(){return AR[arIdx];}
 function arSync(){var b=document.getElementById('areroll');
 b.textContent=ARL[arIdx];b.className='sq'+(arIdx?' act':'');}
+/* 自動生成。周期の表し方は自動積み直しと共通。
+   個数指定では、指定個数目を鳴らし終えた次の発音から新しい進行へ切り替える。 */
+var agIdx=0;
+function agVal(){return AR[agIdx];}
+function agSync(){var b=document.getElementById('agen');
+b.textContent=ARL[agIdx];b.className='sq'+(agIdx?' act':'');}
 function autoStep(){
   if(!prog.length){stopPlay();return;}
+  if(pendingGenerate){                    /* 再生位置を保ったまま、次の発音直前に進行を作り直す */
+    pendingGenerate=false;pendingView=false;hist.push({br:1});walk(true);
+  }
   if(idx>=prog.length-1){                 /* 1周した */
     if(!loopOn){stopPlay();return;}
     idx=-1;hist.push({br:1});             /* 繰り返しなら頭へ。周の区切りを入れる */
-    if(agVal()==='loop'){walkGen();pendingView=true;}
-    else if(arVal()==='loop'){rerollTiers();pendingView=true;}
+    if(agVal()==='loop')walk();
+    if(arVal()==='loop'){rerollTiers();pendingView=true;}
   }
   idx++;
   if(pendingView){pendingView=false;render();blkInfo();}  /* 音と表示を揃える */
@@ -794,9 +780,14 @@ function autoStep(){
   playChord(prog[idx]);
   hist.push({n:prog[idx].n,tier:prog[idx].tier});histSync();
   var ag=agVal();
-  if(ag!=='loop'&&+ag>0&&++agCount>=+ag){agCount=0;walkGen();pendingView=true;}
+  if(ag!=='loop'&&+ag>0&&++agCount>=+ag){
+    agCount=0;pendingGenerate=true;pendingView=false;
+  }
   var ar=arVal();
-  if(ar!=='loop'&&+ar>0&&++arCount>=+ar){arCount=0;rerollTiers();pendingView=true;}
+  if(ar!=='loop'&&+ar>0&&++arCount>=+ar){
+    arCount=0;
+    if(!pendingGenerate){rerollTiers();pendingView=true;}
+  }
   if(last&&!loopOn){stopPlay();return;}
   pNext+=bpmMs();
   pTimer=setTimeout(autoStep,Math.max(20,pNext-performance.now()));
@@ -805,7 +796,7 @@ function startPlay(){
   if(!prog.length)return;
   if(idx<0||idx>=prog.length-1)idx=-1;
   tog(document.getElementById('play'),true);
-  arCount=0;agCount=0;pendingView=false;hist=[];histSync();
+  arCount=0;agCount=0;pendingView=false;pendingGenerate=false;hist=[];histSync();
   pNext=performance.now();bNext=pNext;beatTick();autoStep();
 }
 document.getElementById('play').onclick=function(){pTimer?stopPlay():startPlay();};
@@ -813,7 +804,8 @@ document.getElementById('loop').onclick=function(){loopOn=!loopOn;tog(this,loopO
 document.getElementById('areroll').onclick=function(e){
   arIdx=(arIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;arCount=0;arSync();};
 document.getElementById('agen').onclick=function(e){
-  agIdx=(agIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;agCount=0;agSync();};
+  agIdx=(agIdx+(e.shiftKey?-1:1)+AR.length)%AR.length;
+  agCount=0;pendingGenerate=false;agSync();};
 document.getElementById('copyrun').onclick=function(){
   if(!histCount())return;
   var t=histText(),b=this,old=b.textContent;
@@ -854,18 +846,7 @@ document.getElementById('amp2').oninput=function(){
   document.getElementById('a2v').textContent=this.value;blkInfo();};
 document.getElementById('amp2').onchange=function(){blkInfo();reroll();};
 document.getElementById('len').onchange=function(){blkInfo();};
-/* 盤面は680px固定。画面がそれより狭いときだけ、はみ出さないように縮める。
-   広いときは等倍のままにして、拡大はしない */
-function fitBoard(){
-  var w=document.getElementById('scroller').clientWidth;
-  var k=Math.min(1,w/680), p=document.getElementById('pad'), f=document.getElementById('fit');
-  if(k>=1){p.style.transform='';f.style.width='680px';f.style.height='';}
-  else{p.style.transform='scale('+k.toFixed(4)+')';
-    f.style.width=Math.floor(680*k)+'px';f.style.height=Math.ceil(660*k)+'px';}
-}
-window.addEventListener('resize',fitBoard);
-window.addEventListener('orientationchange',function(){setTimeout(fitBoard,120);});
-bgSet();relabel();walk();blkInfo();showBpm();arSync();agSync();histSync();fitBoard();initSamp();
+bgSet();relabel();walk();blkInfo();showBpm();arSync();agSync();histSync();initSamp();
 })();
 </script>
 </body>
