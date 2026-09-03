@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f1113">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hololo Walker">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ホロホロウォーカー">
+<meta property="og:description" content="コード遷移グラフを歩いて進行を作る道具。顔とリングを持つノードをサンプル音源で鳴らす。ブラウザで動く。">
+<meta property="og:url" content="https://fdorceo-design.github.io/hololo_walker_beta/">
+<meta property="og:image" content="https://fdorceo-design.github.io/hololo_walker_beta/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ホロホロウォーカー">
+<meta name="twitter:description" content="コード遷移グラフを歩いて進行を作る道具。顔とリングを持つノードをサンプル音源で鳴らす。ブラウザで動く。">
+<meta name="twitter:image" content="https://fdorceo-design.github.io/hololo_walker_beta/ogp.png">
 <title>ホロホロウォーカー テスト版</title>
 <style>
 :root{
@@ -963,6 +977,8 @@ document.getElementById('pwk').oninput=function(){
   keys.forEach(function(c){cnStyle(nodeEl[c],parseFloat(nodeEl[c].style.width)||60);});};
 bgSet();relabel();walk();blkInfo();showBpm();arSync();agSync();histSync();initSamp();
 })();
+if('serviceWorker' in navigator){window.addEventListener('load',function(){
+navigator.serviceWorker.register('sw.js').catch(function(){});});}
 </script>
 </body>
 </html>
