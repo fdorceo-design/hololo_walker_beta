@@ -2,7 +2,7 @@
 
 コード遷移グラフを歩いて進行を作る道具 [Chord Walker](https://github.com/fdorceo-design/chord_walker_mobile) の派生版。ノードに顔と回転リングを持たせ、合成音の代わりにサンプル音源で鳴らす。
 
-**→ [https://fdorceo-design.github.io/hololo_walker_beta/](https://fdorceo-design.github.io/hololo_walker_beta/)**
+**→ [https://fdorceo-design.github.io/holoholo_walker_beta/](https://fdorceo-design.github.io/holoholo_walker_beta/)**
 
 ブラウザで開けばそのまま動く。インストールは不要。iPhone や Android ならホーム画面に追加するとアプリとして起動する。一度読み込めばキャッシュされるので、以降はオフラインでも使える。
 
@@ -40,11 +40,15 @@ Chord Walker と同じ 29 ノード・5 種を 7 列 × 5 行の盤面に配置�
 
 アプリ本体は `index.html` 一枚に収まっている。外部ライブラリなし。背景画像・顔スプライト・文字マスク・サンプル音源はすべて base64 で埋め込んでいるため、ファイルサイズが大きい（数 MB）。残りのファイル（`manifest.json`、`sw.js`、アイコン 4 枚、`ogp.png`）はホーム画面への追加とオフライン動作、リンク共有時のカード表示のためのもので、本体の挙動には関わらない。
 
-差し替えたときは `sw.js` の `CACHE` を `hololo-walker-v2` のように上げること。上げないとキャッシュが残って古いままになる。
+差し替えたときは `sw.js` の `CACHE` を `holoholo-walker-v2` のように上げること。上げないとキャッシュが残って古いままになる。
 
 ## 音について
 
 サンプルは Synthesizer V で書き出した 9 本。ボタンで Chord Walker と同じ三角波合成に切り替え可能（サンプル読み込み前や比較用）。iOS では本体の消音スイッチが有効だと音が出ない。
+
+## 関連ツール
+
+[コードリーダー](https://github.com/fdorceo-design/chord_reader) — ここで生成した進行をコピーして貼ると、鳴らして確認しながら MIDI ファイルに書き出せる。DAW に持っていく用途。
 
 ## 着想
 

@@ -1,4 +1,4 @@
-var CACHE = 'hololo-walker-v1';
+var CACHE = 'holoholo-walker-v1';
 var ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-192.png', './icon-512.png', './icon-512-maskable.png', './ogp.png'];
 
 self.addEventListener('install', function (e) {
